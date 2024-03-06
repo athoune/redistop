@@ -15,16 +15,14 @@ docker-build:
 	docker run -t \
 		-v `pwd`:/src \
 		-v `pwd`/.gocache:/.cache \
-		-e GOCACHE=/.cache \
+		-v `pwd`/docker_gitconfig:/.gitconfig \
 		-u `id -u` \
+		-e GOCACHE=/.cache \
 		-w /src \
-		bearstech/golang-dev \
+		golang:${DOCKER_GOLANG_VERSION} \
 		make
-	docker run -t \
-		-v `pwd`:/src \
-		-w /src/bin \
-		bearstech/upx \
-		upx redistop
+	[ -x "`which upx 2>/dev/null`" ] && upx bin/redistop
+	file bin/redistop
 
 test:
 	go test -cover \
