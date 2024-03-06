@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/factorysh/redistop/monitor"
+	"github.com/athoune/redistop/monitor"
 
 	_log "log"
 )

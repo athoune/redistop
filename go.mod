@@ -1,4 +1,4 @@
-module github.com/factorysh/redistop
+module github.com/athoune/redistop
 
 go 1.20
 

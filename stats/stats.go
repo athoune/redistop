@@ -3,7 +3,7 @@ package stats
 import (
 	"sort"
 
-	"github.com/factorysh/redistop/monitor"
+	"github.com/athoune/redistop/monitor"
 )
 
 type Stats struct {

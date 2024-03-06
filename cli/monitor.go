@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/factorysh/redistop/circular"
-	"github.com/factorysh/redistop/stats"
+	"github.com/athoune/redistop/circular"
+	"github.com/athoune/redistop/stats"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )

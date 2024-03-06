@@ -8,8 +8,8 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"github.com/factorysh/redistop/cli"
-	"github.com/factorysh/redistop/version"
+	"github.com/athoune/redistop/cli"
+	"github.com/athoune/redistop/version"
 )
 
 func main() {

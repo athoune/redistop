@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/factorysh/redistop/monitor"
+	"github.com/athoune/redistop/monitor"
 )
 
 func (a *App) InfoLoop() {

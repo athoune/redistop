@@ -1,9 +1,10 @@
 GIT_VERSION?=$(shell git describe --tags --always --abbrev=42 --dirty)
+DOCKER_GOLANG_VERSION=1.22-bookworm
 
 build: bin
 	go build \
 		-o bin/redistop \
-		-ldflags "-X github.com/factorysh/redistop/version.version=$(GIT_VERSION)" \
+		-ldflags "-X github.com/athoune/redistop/version.version=$(GIT_VERSION)" \
 		.
 
 bin:
@@ -27,4 +28,4 @@ docker-build:
 
 test:
 	go test -cover \
-		github.com/factorysh/redistop/circular
+		github.com/athoune/redistop/circular
