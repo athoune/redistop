@@ -41,7 +41,6 @@ func (c *Circular) Values() []float64 {
 			j += l
 		}
 		v[j] = float64(c.points[i]) / c.scale
-		j++
 	}
 	return v
 }
