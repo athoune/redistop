@@ -32,7 +32,7 @@ func NewApp(cfg *AppConfig) *App {
 }
 
 func (a *App) Serve() error {
-	_log.Printf("Connecting to redis://%s\n", a.config.Host)
+	_log.Printf("Connecting to valkey://%s\n", a.config.Host)
 	var err error
 	a.redis, err = monitor.Redis(a.config.Host, a.config.Password)
 	if err != nil {
@@ -47,7 +47,7 @@ func (a *App) Serve() error {
 	}
 
 	a.ui.header.SetTitle(
-		fmt.Sprintf("Redis Top -[ v%s/%s pid: %s port: %s hz: %s uptime: %sd ]",
+		fmt.Sprintf("Valkey/Redis Top -[ v%s/%s pid: %s port: %s hz: %s uptime: %sd ]",
 			infos["redis_version"],
 			infos["multiplexing_api"],
 			infos["process_id"],
