@@ -14,7 +14,7 @@ import (
 
 func main() {
 	fFlag := flag.Duration("f", 2*time.Second, "Frequency")
-	hFlag := flag.Bool("h", false, "Help")
+	hFlag := flag.Bool("help", false, "Help")
 	vFlag := flag.Bool("V", false, "Version")
 	cpuprofile := flag.String("cpuprofile", "", "write cpu profile to file")
 
@@ -54,12 +54,12 @@ You can set REDISTOP_PASSWORD
 
 	host := "localhost:6379"
 	args := flag.Args()
-	if len(args) > 1 {
-		host = args[1]
+	if len(args) > 0 {
+		host = args[0]
 	}
 	var password string
-	if len(args) > 2 {
-		password = args[2]
+	if len(args) > 1 {
+		password = args[1]
 	}
 	p := os.Getenv("REDISTOP_PASSWORD")
 	if p != "" {
