@@ -1,12 +1,12 @@
 package monitor
 
 import (
+	"context"
 	"fmt"
 	"strconv"
-
-	"github.com/mediocregopher/radix/v3"
 )
 
+// MemoryStats holds a subset of fields returned by the MEMORY STATS command.
 type MemoryStats struct {
 	PeakAllocated      int64
 	DatasetBytes       int64
@@ -15,15 +15,46 @@ type MemoryStats struct {
 	ReplicationBacklog int64
 }
 
+// Memory queries Redis for MEMORY STATS and extracts the fields we care about.
 func (r *RedisServer) Memory() (*MemoryStats, error) {
 	m := &MemoryStats{}
-	var mem map[string]interface{}
-	err := r.pool.Do(radix.Cmd(&mem, "MEMORY", "STATS"))
+	ctx := context.Background()
+
+	cmd := r.client.Do(ctx, "MEMORY", "STATS")
+	if err := cmd.Err(); err != nil {
+		return nil, err
+	}
+
+	// MEMORY STATS returns an array of alternating keys and values.
+	raw, err := cmd.Result()
 	if err != nil {
 		return nil, err
 	}
+
+	// go-redis may parse the response as either []interface{} or map[interface{}]interface{}.
+	mem := make(map[string]interface{})
+	switch val := raw.(type) {
+	case []interface{}:
+		for i := 0; i+1 < len(val); i += 2 {
+			key, ok := val[i].(string)
+			if !ok {
+				continue
+			}
+			mem[key] = val[i+1]
+		}
+	case map[interface{}]interface{}:
+		for k, v := range val {
+			key, ok := k.(string)
+			if !ok {
+				continue
+			}
+			mem[key] = v
+		}
+	default:
+		return nil, fmt.Errorf("unexpected MEMORY STATS response type: %T", raw)
+	}
+
 	for k, v := range mem {
-		//fmt.Printf("%s => %v\n", k, v)
 		switch k {
 		case "peak.allocated":
 			vv, ok := v.(int64)
@@ -44,15 +75,26 @@ func (r *RedisServer) Memory() (*MemoryStats, error) {
 			}
 			m.KeysCount = vv
 		case "fragmentation":
-			vv, ok := v.([]byte)
-			if !ok {
-				return nil, fmt.Errorf("not a string : %v", v)
+			// go-redis may return the value as float64, []byte or string
+			// depending on the Redis version and driver internals.
+			switch vv := v.(type) {
+			case float64:
+				m.Fragmentation = vv
+			case []byte:
+				vvv, err := strconv.ParseFloat(string(vv), 64)
+				if err != nil {
+					return nil, err
+				}
+				m.Fragmentation = vvv
+			case string:
+				vvv, err := strconv.ParseFloat(vv, 64)
+				if err != nil {
+					return nil, err
+				}
+				m.Fragmentation = vvv
+			default:
+				return nil, fmt.Errorf("unexpected fragmentation type: %T", v)
 			}
-			vvv, err := strconv.ParseFloat(string(vv), 64)
-			if err != nil {
-				return nil, err
-			}
-			m.Fragmentation = vvv
 		case "replication.backlog":
 			vv, ok := v.(int64)
 			if !ok {
@@ -61,9 +103,10 @@ func (r *RedisServer) Memory() (*MemoryStats, error) {
 			m.ReplicationBacklog = vv
 		}
 	}
-	return m, err
+	return m, nil
 }
 
+// Table returns a human-readable representation of MemoryStats.
 func (m *MemoryStats) Table() [][]string {
 	return [][]string{
 		{"peak allocated", fmt.Sprintf("%d", m.PeakAllocated)},

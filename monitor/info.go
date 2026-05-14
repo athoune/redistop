@@ -1,10 +1,11 @@
 package monitor
 
-import "github.com/mediocregopher/radix/v3"
+import "context"
 
+// Info fetches the INFO command output and parses it into a key/value map.
 func (r *RedisServer) Info() (map[string]string, error) {
-	var bulk string
-	err := r.pool.Do(radix.Cmd(&bulk, "INFO"))
+	ctx := context.Background()
+	bulk, err := r.client.Info(ctx).Result()
 	if err != nil {
 		return nil, err
 	}

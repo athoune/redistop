@@ -12,7 +12,7 @@ import (
 func TestRedis(t *testing.T) {
 	r, err := Redis("127.0.0.1:6379", "test")
 	assert.NoError(t, err)
-	assert.NotNil(t, r.pool)
+	assert.NotNil(t, r.client)
 	var s map[string]string
 	var m *MemoryStats
 	wg := &sync.WaitGroup{}

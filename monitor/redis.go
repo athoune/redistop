@@ -1,51 +1,48 @@
 package monitor
 
 import (
+	"context"
 	"time"
 
-	"github.com/mediocregopher/radix/v3"
+	"github.com/redis/go-redis/v9"
 )
 
+// RedisServer wraps a go-redis client for a single Redis instance.
 type RedisServer struct {
 	address  string
 	password string
-	pool     *radix.Pool
+	client   *redis.Client
 }
 
+// Redis creates a new RedisServer connected to the given address.
+// It pings the server to verify connectivity before returning.
 func Redis(address, password string) (*RedisServer, error) {
 	r := &RedisServer{
 		address:  address,
 		password: password,
 	}
 	var err error
-	r.pool, err = r.makePool()
+	r.client, err = r.makeClient()
 	if err != nil {
 		return nil, err
 	}
 	return r, nil
 }
 
-func (r *RedisServer) makePool() (*radix.Pool, error) {
-	opts := []radix.DialOpt{
-		radix.DialConnectTimeout(2 * time.Second),
-	}
-	if r.password != "" {
-		opts = append(opts, radix.DialAuthPass(r.password))
-	}
-	p, err := radix.NewPool("tcp", r.address, 1, radix.PoolConnFunc(func(network, addr string) (radix.Conn, error) {
-		conn, err := radix.Dial("tcp", r.address, opts...)
-		if err != nil {
-			return nil, err
-		}
-		var pong string
-		err = conn.Do(radix.Cmd(&pong, "PING"))
-		if err != nil {
-			return nil, err
-		}
-		return conn, nil
-	}))
-	if err != nil {
+func (r *RedisServer) makeClient() (*redis.Client, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr:        r.address,
+		Password:    r.password,
+		DB:          0,
+		PoolSize:    1,
+		DialTimeout: 2 * time.Second,
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	if err := client.Ping(ctx).Err(); err != nil {
 		return nil, err
 	}
-	return p, nil
+	return client, nil
 }
