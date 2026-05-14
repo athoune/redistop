@@ -162,6 +162,13 @@ func (a *AppUI) fundation() {
 		AddItem(a.errorPanel, 3, 0, 1, 3, 0, 0, false)
 
 	a.app.SetRoot(a.grid, true).SetFocus(a.grid).EnableMouse(true)
+	a.app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyEscape {
+			a.app.Stop()
+			return nil
+		}
+		return event
+	})
 
 	a.keyspaces = tview.NewTable()
 	a.keyspaces.SetBorder(true)
