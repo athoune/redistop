@@ -24,20 +24,29 @@ docker-build:
 	[ -x "`which upx 2>/dev/null`" ] && upx bin/redistop
 	file bin/redistop
 
-test-integration:
+docker-redis-start:
 	docker run \
 	    --name redistop-test \
 		--publish 127.0.0.1:6379:6379 \
 		-d redis:8.6-alpine \
 		    --requirepass test
 	docker container list --filter 'name=redistop-test' --all
-	go test -cover \
-		github.com/athoune/redistop/monitor
+
+docker-redis-stop:
 	docker container stop redistop-test
 	docker container remove redistop-test
+
+test-integration:
+	make docker-redis-start
+	go test -cover \
+		github.com/athoune/redistop/monitor
+	make docker-redis-stop
 
 test:
 	go test -cover \
 		github.com/athoune/redistop/circular
 
 test-all: test test-integration
+
+redistop:
+	REDISTOP_PASSWORD=test ./redistop
