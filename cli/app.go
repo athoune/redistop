@@ -36,14 +36,14 @@ func (a *App) Serve() error {
 	var err error
 	a.redis, err = monitor.Redis(a.config.Host, a.config.Password)
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot connect to %s: %w", a.config.Host, err)
 	}
 
 	a.ui = NewAppUI()
 
 	infos, err := a.redis.Info()
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot fetch INFO: %w", err)
 	}
 
 	a.ui.header.SetTitle(

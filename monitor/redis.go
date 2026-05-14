@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,7 +32,7 @@ func Redis(address, password string) (*RedisServer, error) {
 	var err error
 	r.client, err = r.makeClient()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("redis %s: %w", address, err)
 	}
 	return r, nil
 }
@@ -78,7 +79,10 @@ func (r *RedisServer) makeClient() (*redis.Client, error) {
 
 	if err := client.Ping(ctx).Err(); err != nil {
 		_ = client.Close()
-		return nil, err
+		if strings.Contains(err.Error(), "NOAUTH") || strings.Contains(err.Error(), "WRONGPASS") {
+			return nil, fmt.Errorf("authentication failed — check your password, REDISCLI_AUTH or ~/.rediscli_auth: %w", err)
+		}
+		return nil, fmt.Errorf("ping failed: %w", err)
 	}
 	return client, nil
 }
