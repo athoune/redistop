@@ -66,7 +66,9 @@ test-integration: test-valkey-integration test-redis-integration
 
 test:
 	go test -cover \
-		github.com/athoune/redistop/circular
+		github.com/athoune/redistop/circular \
+		github.com/athoune/redistop/stats \
+		github.com/athoune/redistop/cli
 
 test-all: test test-integration
 
