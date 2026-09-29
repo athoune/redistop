@@ -58,7 +58,8 @@ func (a *App) Serve() error {
 		))
 
 	a.log = &Logger{
-		block: a.ui.errorPanel,
+		block:  a.ui.errorPanel,
+		update: func(f func()) { a.ui.app.QueueUpdateDraw(f) },
 	}
 
 	// Cancelled when Serve returns (tview app stopped),
