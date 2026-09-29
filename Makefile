@@ -71,4 +71,4 @@ test:
 test-all: test test-integration
 
 redistop:
-	REDISTOP_PASSWORD=test ./redistop
+	REDISTOP_PASSWORD=test ./bin/redistop
