@@ -45,6 +45,8 @@ func NewGraphBox() *GraphBox {
 }
 
 func (g *GraphBox) SetSeries(series []float64) {
+	g.lock.Lock()
+	defer g.lock.Unlock()
 	g.series = series
 }
 
@@ -54,6 +56,9 @@ func (g *GraphBox) Draw(screen tcell.Screen) {
 	g.DrawForSubclass(screen, g)
 	if len(g.series) > 0 {
 		x, y, width, height := g.GetInnerRect()
+		if width < 1 || height < 1 {
+			return
+		}
 		p := asciigraph.Plot(g.series, asciigraph.Height(height-1))
 		for i, line := range strings.Split(p, "\n") {
 			fullLine := make([]rune, width)
