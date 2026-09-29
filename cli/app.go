@@ -39,6 +39,7 @@ func (a *App) Serve() error {
 	if err != nil {
 		return err
 	}
+	defer a.redis.Close()
 
 	a.ui = NewAppUI()
 
