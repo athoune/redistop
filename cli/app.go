@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -60,7 +61,12 @@ func (a *App) Serve() error {
 		block: a.ui.errorPanel,
 	}
 
-	a.MonitorLoop()
+	// Cancelled when Serve returns (tview app stopped),
+	// so background loops can exit instead of leaking.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	a.MonitorLoop(ctx)
 	a.InfoLoop()
 	a.MemoryLoop()
 
