@@ -1,5 +1,6 @@
 GIT_VERSION?=$(shell git describe --tags --always --abbrev=42 --dirty)
-DOCKER_GOLANG_VERSION=1.22-bookworm
+DOCKER_GOLANG_VERSION=1.27-alpine3.24
+DOCKER_REDIS_VERSION=8-alpine
 
 build: bin
 	go build \
@@ -28,7 +29,7 @@ docker-redis-start:
 	docker run \
 	    --name redistop-test \
 		--publish 127.0.0.1:6379:6379 \
-		-d redis:8.6-alpine \
+		-d redis:${DOCKER_REDIS_VERSION} \
 		    --requirepass test
 	docker container list --filter 'name=redistop-test' --all
 

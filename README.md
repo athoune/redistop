@@ -1,12 +1,12 @@
 Redis Top
 =========
 
-Redistop uses [MONITOR](https://valkey.io/commands/monitor/) to watch Valkey
+Redistop uses [MONITOR](https://redis.io/commands/monitor/) to watch Redis
 commands and shows per command and per host statistics.
 
 > Because MONITOR streams back all commands, its use comes at a cost.
 
-Redistop uses [INFO](https://valkey.io/commands/info/) command too.
+Redistop uses [INFO](https://redis.io/commands/info/) command too.
 
 "Redis stop" means "Say stop again" in french, and it's hard to find a new joke with Valkey.
 
@@ -18,7 +18,7 @@ Example
 Build
 -----
 
-If you have recent golang dev enironment set, you can build it with the Makefile
+If you have recent golang dev environment set, you can build it with the Makefile
 
     make
 
