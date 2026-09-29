@@ -15,6 +15,7 @@ import (
 func main() {
 	fFlag := flag.Duration("f", 2*time.Second, "Frequency")
 	hFlag := flag.Bool("help", false, "Help")
+	flag.BoolVar(hFlag, "h", false, "Help")
 	vFlag := flag.Bool("V", false, "Version")
 	cpuprofile := flag.String("cpuprofile", "", "write cpu profile to file")
 
@@ -34,16 +35,18 @@ func main() {
 
 	if *hFlag {
 		fmt.Printf(`RedisTop %s
-top for Redis, group by command and client IP
+top for Valkey (and Redis), group by command and client IP
 
 Usage:
-  redistop [[localhost:6379] password]
+  redistop [host:port] [password]
 Options:
   -f 2s : Refresh frequency
-  -h : Help
+  -h, -help : Help
   -V : Version
+  -cpuprofile file : Write cpu profile to file
 
-You can set REDISTOP_PASSWORD
+You can set REDISTOP_PASSWORD instead of passing the password
+(it takes precedence over the command line argument).
 `, version.Version())
 		return
 	}

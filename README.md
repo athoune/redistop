@@ -18,13 +18,33 @@ Example
 Build
 -----
 
-If you have recent golang dev environment set, you can build it with the Makefile
+Requires Go 1.26 or newer. If you have a Go dev environment set, you can build it with the Makefile
 
     make
 
-If you need a Linux compilation, or juste using Docker:
+If you need a Linux compilation, or just using Docker:
 
     make docker-build
+
+Usage
+-----
+
+    ./bin/redistop [host:port] [password]
+
+The default host is `localhost:6379`. The password can also come from the
+`REDISTOP_PASSWORD` environment variable, which takes precedence over the
+command line argument.
+
+Tests
+-----
+
+Unit tests, no server needed:
+
+    make test
+
+Integration tests, need Docker, run against Valkey then Redis:
+
+    make test-integration
 
 License
 -------
