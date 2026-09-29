@@ -106,7 +106,11 @@ func (a *AppUI) fundation() {
 	a.header = tview.NewTable().SetFixed(1, 4)
 	a.header.SetBorder(true)
 	a.header.SetTitle("Redistop")
-	for i := 0; i < 4; i++ {
+	// 0: cpu, 1: ops/s, 2: in, 3: out, 4: keys, 5: mem.
+	// All six must exist: MemoryLoop writes cells 4 and 5,
+	// and GetCell on a missing cell returns a detached cell
+	// whose content is silently lost.
+	for i := 0; i < 6; i++ {
 		a.header.SetCell(0, i, tview.NewTableCell("*"))
 	}
 	a.graph = NewGraphBox()
